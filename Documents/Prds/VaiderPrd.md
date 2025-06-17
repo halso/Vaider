@@ -2,22 +2,31 @@
 
 ## 1. Introduction
 
-*   **Problem Statement**: What problem is Vaider trying to solve?
+*   **Problem Statement**: For the Vibe Coder the problem only occurs when they are coding an app with a GUI (e.g., a Phone App or a Web App). The Agent can write automated tests but cannot actually "see" or interact with the live UI, so UI issues go unnoticed unless the human points them out.
 *   **Vision**: What is the long-term vision for Vaider?
 
 ## 2. Goals and Objectives
 
-*   **Primary Goals**: What are the main goals for the first release of Vaider?
-*   **Success Metrics**: How will we measure the success of Vaider?
+*   **Primary Goals**: Enable the Agent to understand the UI state during test execution.
+*   **Success Metrics**: 
+    * Speed up the coding process.
+    * Reduce the need for Vibe Coders to verify or correct UI problems.
 
 ## 3. Target Audience
 
-*   **User Personas**: Who are the primary users of Vaider?
+*   **User Personas**: Primary Persona – Vibe Coder
+    * Skill level: reasonably high.
+    * Work environment: any (solo projects, startup teams, enterprise prototyping, etc.).
+    * Current tools: focused on Cursor; first release will target Cursor users exclusively.
 
 ## 4. Features
 
-*   **Core Features**: List the essential features for the initial launch.
-*   **Feature Details**: Provide a detailed description of each feature.
+*   **Core Features**: 
+    * Video Interpretation Service (AI-facing):
+        1. Agent provides a video file (or file name) generated during a GUI test.
+        2. Vaider returns a detailed textual description of what happens in the video.
+        3. The Agent compares this description with expected behavior to identify mismatches.
+    * Coder Experience: No separate feature UI; coders simply observe that the Agent becomes faster and better at writing GUI systems.
 
 ## 5. Design and UX
 
