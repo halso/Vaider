@@ -108,3 +108,15 @@
 * **Error Handling**:
 
   * If an error occurs, the MCP server returns an HTTP 500 response with a JSON-formatted body describing the issue. This allows the Agent to gracefully detect and log failures.
+
+
+## 7. Future Roadmap
+
+*   **V2 Features**:
+    * Support additional video-processing AI services beyond Google Gemini (e.g., OpenAI video models, Anthropic Claude Vision, open-source models).
+
+## 8. Other Notes 
+
+*   **Experimental Programs**: During development of the project a number of experimental program will be used to try out various parts of the system before working on the code for them.  These will include:
+    - One that creates and runs a simple Hello World MCP server that can be run and tested by an Agent that just says Hello Agent and tells it the current time.
+    - One that takes a test input video file and sends it to Gemini to get a description of it.
