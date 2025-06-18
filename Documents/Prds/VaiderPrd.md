@@ -30,8 +30,7 @@
     1. Agent provides a video file (or file name) generated during a GUI test.
     2. Vaider returns a detailed textual description of what happens in the video.
     3. The Agent compares this description with expected behavior to identify mismatches.
-
-    *Note*: Version 1 supports only Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non Pro Gemini models produce low quality video descriptions)
+       *Note*: Version 1 supports only Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non Pro Gemini models produce low quality video descriptions)
   * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example, if the Agent gets stuck in a loop due to problems with Vaider's responses, the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which contains the requests sent to Vaider and the corresponding responses.
 
 ## 5. Design and UX
@@ -75,25 +74,13 @@
 
 * **Architecture**:
 
-  * The MCP server runs locally on the developer's machine, listening on a specified port.
-  * It can be configured to use either a standard input/output (stdio) transport or an HTTP/SSE (Server-Sent Events) transport for communication.
+  * The MCP server runs locally on the developer's machine, listening on a specified port. By default, it listens only on localhost to avoid any unintended remote exposure.
+  * It is configured to use HTTP/SSE (Server-Sent Events) transport for communication in version 1.
   * The server acts as a bridge between the Agent and the video analysis service (Google Gemini 1.5 Pro).
 
 * **Configuration**:
 
-  * Developers can choose between stdio or HTTP transport by setting the appropriate configuration in the `.cursor/mcp.json` file.
-  * Example stdio configuration:
-
-    ```json
-    {
-      "tools": {
-        "vaider": {
-          "transport": "stdio",
-          "command": ["npx", "vadr-mcp"]
-        }
-      }
-    }
-    ```
+  * Developers should configure HTTP transport by setting the appropriate configuration in the `.cursor/mcp.json` file.
   * Example HTTP configuration:
 
     ```json
@@ -118,15 +105,6 @@
   * Easier testing and debugging due to the ability to interact with the server via standard web tools when using HTTP.
   * Flexibility in transport options allows developers to choose the method that best fits their development environment.
 
-## 7. Future Roadmap
+* **Error Handling**:
 
-* **V2 Features**:
-
-  * Support additional video-processing AI services beyond Google Gemini (e.g., OpenAI video models, Anthropic Claude Vision, open-source models).
-
-## 7. Other Notes
-
-* **Experimental Programs**: During development of the project a number of experimental program will be used to try out various parts of the system before working on the code for them.  These will include:
-
-  * One that creates and runs a simple Hello World MCP server that can be run and tested by an Agent that just says Hello Agent and tells it the current time.
-  * One that takes a test input video file and sends it to Gemini to get a description of it.
+  * If an error occurs, the MCP server returns an HTTP 500 response with a JSON-formatted body describing the issue. This allows the Agent to gracefully detect and log failures.
