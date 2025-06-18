@@ -5,7 +5,11 @@
 ## 1. Install & Enable
 1. Coder adds the Vaider extension/CLI to the project.
 2. Grants permissions so the Agent can invoke Vaider APIs.
-3. Vaider auto-detects Playwright GUI tests that generate video output; no further configuration required.
+3. Coder provides a paid Google API key for Gemini 1.5 Pro:
+   - Place `GOOGLE_API_KEY=ai_********` in a local `.env` file.
+   - Ensure `.env` is listed in `.gitignore` so the key is never committed.
+   - Alternatively, export the variable in the shell for ephemeral use.
+4. Vaider auto-detects Playwright GUI tests that generate video output; no further configuration required.
 
 ## 2. Test Creation & Execution
 1. Agent writes or updates Playwright GUI tests.
