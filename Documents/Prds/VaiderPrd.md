@@ -32,7 +32,7 @@
 
 ## 5. Design and UX
 
-*   **Mockups/Wireframes**: Links to any design assets.
+*   **Mockups/Wireframes**: No dedicated UI in v1; mock-ups deferred until a visual surface is introduced.
 *   **User Flow**:
     1. **Install & Enable**
         1. Coder adds the Vaider extension/CLI to the project.
@@ -49,7 +49,7 @@
         2. If mismatches exist, `VaiderRules` instructs the Agent to revise code or tests and re-run until expectations match.
     5. **Coder Feedback Surface**
         1. On success, the coder simply sees green tests; development proceeds faster.
-        2. On failure (e.g., Agent stuck in a loop), the coder opens `test-output/test-abc/test-abc.mp4.VaiderInteractions/`, which contains files for every request to Vaider and every returned description for troubleshooting.
+        2. On failure (e.g., Agent stuck in a loop), the coder can troubleshoot by checking the `test-output/test-abc/test-abc.mp4.VaiderInteractions/` folder, which contains files for every request to Vaider and every returned description.
     6. **Improvement in Vibe Coder Productivity**
         1. As the Agent can autonomously catch and rectify GUI issues via Vaider, it requires less feedback from the Vibe Coder, enabling faster, more independent task completion.
 
