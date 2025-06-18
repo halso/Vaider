@@ -22,11 +22,11 @@
 ## 4. Features
 
 *   **Core Features**: 
-    * Video Interpretation Service (AI-facing):
+    * Video Interpretation Service (Agent-facing):
         1. Agent provides a video file (or file name) generated during a GUI test.
         2. Vaider returns a detailed textual description of what happens in the video.
         3. The Agent compares this description with expected behavior to identify mismatches.
-    * Coder Experience: No separate feature UI; coders simply observe that the Agent becomes faster and better at writing GUI systems.
+    * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues—for example, if the Agent gets stuck in a loop due to problems with Vaider's responses—the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which contains the requests sent to Vaider and the corresponding responses.
 
 ## 5. Design and UX
 
