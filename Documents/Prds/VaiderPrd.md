@@ -22,18 +22,36 @@
 ## 4. Features
 
 *   **Core Features**: 
-    * Video Interpretation Service (Agent-facing) – initial implementation integrates with Google Gemini for video analysis:
+    * Video Interpretation Service (Agent-facing) – initial implementation integrates only with Google Gemini 1.5 Pro for video analysis:
         1. Agent provides a video file (or file name) generated during a GUI test.
         2. Vaider returns a detailed textual description of what happens in the video.
         3. The Agent compares this description with expected behavior to identify mismatches.
 
-        *Note*: Version 1 supports only Google Gemini as the underlying video-processing AI.
+        *Note*: Version 1 supports only Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non Pro Gemini models produce low quality video descriptions)
     * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example, if the Agent gets stuck in a loop due to problems with Vaider's responses, the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which contains the requests sent to Vaider and the corresponding responses.
 
 ## 5. Design and UX
 
 *   **Mockups/Wireframes**: Links to any design assets.
-*   **User Flow**: Describe the user journey.
+*   **User Flow**:
+    1. **Install & Enable**
+        1. Coder adds the Vaider extension/CLI to the project.
+        2. Coder provides a paid Google API key for Gemini 1.5 Pro (e.g., in a local `.env` file ignored by Git, or exported as `GOOGLE_API_KEY`).
+        3. Configures Cursor so the Agent can invoke Vaider APIs.
+        4. Adds and configures the `VaiderRules` file (supplied in Vaider docs) that instructs when to use the Vaider API—for example, whenever Playwright UI tests are run.
+    2. **Test Creation & Execution**
+        1. When the Agent writes Playwright GUI tests it records a video of the whole test (e.g., `test-output/test-abc/test-abc.mp4`).
+    3. **Video Interpretation**
+        1. Immediately after the test finishes, the Agent calls Vaider, passing the video filename.
+        2. Vaider forwards the file to Google Gemini and returns a detailed, step-by-step textual description of on-screen activity to the Agent.
+    4. **Validation Loop**
+        1. Agent compares the description with its expected scenario.
+        2. If mismatches exist, `VaiderRules` instructs the Agent to revise code or tests and re-run until expectations match.
+    5. **Coder Feedback Surface**
+        1. On success, the coder simply sees green tests; development proceeds faster.
+        2. On failure (e.g., Agent stuck in a loop), the coder opens `test-output/test-abc/test-abc.mp4.VaiderInteractions/`, which contains files for every request to Vaider and every returned description for troubleshooting.
+    6. **Improvement in Vibe Coder Productivity**
+        1. As the Agent can autonomously catch and rectify GUI issues via Vaider, it requires less feedback from the Vibe Coder, enabling faster, more independent task completion.
 
 ## 6. Technical Specifications
 
