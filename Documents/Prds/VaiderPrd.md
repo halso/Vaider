@@ -3,7 +3,6 @@
 ## 1. Introduction
 
 * **Problem Statement**: For the Vibe Coder the problem only occurs when they are coding an app with a GUI (e.g., a Phone App or a Web App). The Agent can write automated tests but cannot actually "see" or interact with the live UI, so UI issues go unnoticed unless the human points them out.
-* **Vision**: What is the long-term vision for Vaider?
 
 ## 2. Goals and Objectives
 
@@ -25,14 +24,17 @@
 
 * **Core Features**:
 
-  * Video Interpretation Service (Agent-facing) – initial implementation integrates only with Google Gemini 1.5 Pro for video analysis:
+  * Video Interpretation Service (Agent-facing). Process:
 
     1. Agent provides a video file (or file name) generated during a GUI test.
     2. Vaider returns a detailed textual description of what happens in the video.
     3. The Agent compares this description with expected behavior to identify mismatches.
-       *Note*: Version 1 supports only Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non Pro Gemini models produce low quality video descriptions)
-  * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example, if the Agent gets stuck in a loop due to problems with Vaider's responses, the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which contains the requests sent to Vaider and the corresponding responses.
 
+  * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example if the Agent gets stuck in a loop due to negative responses from Vaider, then the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which will contain the requests sent to Vaider and the corresponding responses.
+
+ Limititations:-
+ – Version 1 will only support Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non-Pro Gemini models produce low quality video descriptions)
+ 
 ## 5. Design and UX
 
 * **Mockups/Wireframes**: No dedicated UI in v1; mock-ups deferred until a visual surface is introduced.
@@ -40,10 +42,10 @@
 
   1. **Install & Enable**
 
-     1. Coder adds the Vaider extension/CLI to the project.
+     1. Coder adds the Vaider extension/CLI to the project (details to be added in Technical Spec)
      2. Coder provides a paid Google API key for Gemini 1.5 Pro (e.g., in a local `.env` file ignored by Git, or exported as `GOOGLE_API_KEY`).
-     3. Configures Cursor so the Agent can invoke Vaider APIs.
-     4. Adds and configures the `VaiderRules` file (supplied in Vaider docs) that instructs when to use the Vaider API—for example, whenever Playwright UI tests are run.
+     3. Coder configures Cursor so the Agent can invoke Vaider APIs.
+     4. Coder adds and configures the `VaiderRules` file (supplied in Vaider docs) that instructs the Agent when to use the Vaider API — for example, whenever Playwright UI tests are run.
   2. **Test Creation & Execution**
 
      1. When the Agent writes Playwright GUI tests it records a video of the whole test (e.g., `test-output/test-abc/test-abc.mp4`).
@@ -100,7 +102,7 @@
   * The MCP server forwards the video to the configured video analysis service and returns the textual description to the Agent.
   * The communication protocol ensures that the Agent can seamlessly request and receive video analysis results in real-time.
 
-* **Benefits**:
+* **Benefits Of HTTP/SSE Over Stdio Option**:
 
   * Easier testing and debugging due to the ability to interact with the server via standard web tools when using HTTP.
   * Flexibility in transport options allows developers to choose the method that best fits their development environment.
@@ -117,6 +119,6 @@
 
 ## 8. Other Notes 
 
-*   **Experimental Programs**: During development of the project a number of experimental program will be used to try out various parts of the system before working on the code for them.  These will include:
+*   **Experimental Programs**: During development of the project a number of experimental program will be used to try out various technologies used in the system **before** working on the code for them.  These will include:
     - One that creates and runs a simple Hello World MCP server that can be run and tested by an Agent that just says Hello Agent and tells it the current time.
     - One that takes a test input video file and sends it to Gemini to get a description of it.
