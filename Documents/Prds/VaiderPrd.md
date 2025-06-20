@@ -1,5 +1,11 @@
 # Product Requirements Document: Vaider
 
+## 0. Context
+
+This project is being developed by Steve in his spare time, dedicating a few hours during evenings and weekends (approximately five hours per week). The goal is to create a minimal yet functional implementation of the Vaider tool within the next few weeks or months and release it as an open-source resource.
+
+Steve's motivation for this project stems from a desire to gain more experience in AI coding, transitioning from his current role as a Java developer in a non-AI-related field. By contributing something valuable to the open-source community, Steve hopes to create a tool that others will find useful. Additionally, there are plans to publish a YouTube video demonstrating how to use the tool, further sharing knowledge and engaging with the developer community.
+
 ## 1. Introduction
 
 * **Problem Statement**: For the Vibe Coder the problem only occurs when they are coding an app with a GUI (e.g., a Phone App or a Web App). The Agent can write automated tests but cannot actually "see" or interact with the live UI, so UI issues go unnoticed unless the human points them out.
@@ -32,8 +38,9 @@
 
   * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example if the Agent gets stuck in a loop due to negative responses from Vaider, then the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which will contain the requests sent to Vaider and the corresponding responses.
 
- Limititations:-
- – Version 1 will only support Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non-Pro Gemini models produce low quality video descriptions)
+* **Limitations**:
+
+  * Version 1 will only support Google Gemini 1.5 Pro as the underlying video-processing AI, which requires a paid API Key (since non-Pro Gemini models produce low quality video descriptions)
  
 ## 5. Design and UX
 
@@ -56,7 +63,8 @@
   4. **Validation Loop**
 
      1. Agent compares the description with its expected scenario.
-     2. If mismatches exist, `VaiderRules` instructs the Agent to revise code or tests and re-run until expectations match.
+     2. If mismatches exist, `VaiderRules` instructs the Agent to revise code or tests and re-run until expectations match (up to a maximum of 5 times).
+      3. If after 5 attempts the test still fails, the Agent stops and notifies the developer, pointing to the `.VaiderInteractions` folder.
   5. **Coder Feedback Surface**
 
      1. On success, the coder simply sees green tests; development proceeds faster.
@@ -67,50 +75,7 @@
 
 ## 6. Technical Specifications
 
-* **System Architecture**: High-level overview of the technical design.
-* **Dependencies**: Any external services or libraries.
-
-### 6.1 MCP Server Technical Details
-
-* **Purpose**: The MCP (Message Communication Protocol) server allows the AI agent to communicate with the Vaider tool for video analysis.
-
-* **Architecture**:
-
-  * The MCP server runs locally on the developer's machine, listening on a specified port. By default, it listens only on localhost to avoid any unintended remote exposure.
-  * It is configured to use HTTP/SSE (Server-Sent Events) transport for communication in version 1.
-  * The server acts as a bridge between the Agent and the video analysis service (Google Gemini 1.5 Pro).
-
-* **Configuration**:
-
-  * Developers should configure HTTP transport by setting the appropriate configuration in the `.cursor/mcp.json` file.
-  * Example HTTP configuration:
-
-    ```json
-    {
-      "tools": {
-        "vaider": {
-          "transport": "http",
-          "url": "http://localhost:3456"
-        }
-      }
-    }
-    ```
-
-* **Workflow**:
-
-  * When the Agent completes a GUI test, it sends the video file path to the MCP server.
-  * The MCP server forwards the video to the configured video analysis service and returns the textual description to the Agent.
-  * The communication protocol ensures that the Agent can seamlessly request and receive video analysis results in real-time.
-
-* **Benefits Of HTTP/SSE Over Stdio Option**:
-
-  * Easier testing and debugging due to the ability to interact with the server via standard web tools when using HTTP.
-  * Flexibility in transport options allows developers to choose the method that best fits their development environment.
-
-* **Error Handling**:
-
-  * If an error occurs, the MCP server returns an HTTP 500 response with a JSON-formatted body describing the issue. This allows the Agent to gracefully detect and log failures.
-
+See VaiderTechSpec.md
 
 ## 7. Future Roadmap
 
