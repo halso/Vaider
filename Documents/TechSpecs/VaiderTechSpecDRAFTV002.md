@@ -2,11 +2,122 @@
 
 ## 1. System Architecture
 
-*Placeholder for:* High-level overview of the technical design.
+### 1.1 Data Flow
+
+The data flow in the Vaider system enables the Agent to interpret GUI behavior via video analysis. The process is as follows:
+
+1. **Test Execution**: The Agent runs a GUI test (e.g., Playwright), which produces a video file of the test execution (e.g., `test-output/test-abc/test-abc.mp4`).
+2. **Video Submission**: The Agent sends the path to this video file to the local MCP Server via HTTP.
+3. **Forwarding to Gemini**: The MCP Server receives the path, reads the video, and forwards it to the Google Gemini 1.5 Pro API for interpretation.
+4. **Receiving Description**: Gemini returns a textual description of the video contents to the MCP Server.
+5. **Agent Decision**: The MCP Server sends the description back to the Agent. The Agent compares it with expected outcomes.
+6. **Looping and Logging**: If mismatches exist, the Agent revises and reruns the test (up to 5 times). All requests and responses are logged to a `.VaiderInteractions/` folder for inspection.
+
+#### Diagram
+
+```mermaid
+flowchart TD
+    A[Agent runs GUI test] --> B[Creates test video file]
+    B --> C[Agent sends video path to MCP Server]
+    C --> D[MCP Server forwards video to Gemini 1.5 Pro]
+    D --> E[Gemini returns textual description]
+    E --> F[MCP Server returns description to Agent]
+    F --> G{Agent compares description to expectations}
+    G -->|If mismatch| J[Agent updates code and re-runs test]
+    J --> A
+    G -->|If match| H[Agent continues development]
+    G -->|If 5 failures| I[Notify developer and log to .VaiderInteractions/]
+```
+
+### 1.2 Key Components
+
+The Vaider system consists of several key components, each with a specific role in enabling automated video analysis and test validation:
+
+1. **Agent**
+
+   * The AI developer assistant responsible for writing and executing GUI tests.
+   * Detects `.mp4` test videos and triggers the Vaider workflow.
+   * Compares the textual description with expected outcomes and adjusts code or test logic if mismatches are found.
+
+2. **MCP Server (Message Communication Protocol Server)**
+
+   * A lightweight local HTTP/SSE server that acts as a relay between the Agent and the video analysis service.
+   * Receives the video path from the Agent, streams the video to Gemini, and returns the analysis result.
+   * Designed to run on `localhost` to avoid external exposure.
+
+3. **Vaider Tooling Layer**
+
+   * Includes the `VaiderRules` configuration file, which guides Agent behaviour (e.g., retry strategy, timeouts).
+   * Also encompasses logging and diagnostics infrastructure (e.g., `.VaiderInteractions/` folder) to support debugging and user insight.
+
+4. **Google Gemini 1.5 Pro API**
+
+   * Cloud-based video interpretation service that returns detailed, step-by-step textual descriptions.
+   * Currently the only supported video model in v1.
+   * Requires a paid API key managed via environment variable or config.
+
+### 1.3 Security Measures
+
+The Vaider system is designed with a minimal but effective security posture suitable for local development environments. Key measures include:
+
+1. **Localhost-only Binding**
+
+   * The MCP Server is configured to listen only on `localhost`, ensuring it is not accessible from remote machines.
+   * This default setting helps prevent accidental exposure of the developer's local tools or data to the internet.
+
+2. **API Key Handling**
+
+   * The Google Gemini API requires a paid key, which must be stored securely.
+   * Developers are instructed to load the key from a local environment variable (e.g., `GOOGLE_API_KEY`) or a `.env` file excluded from version control (e.g., via `.gitignore`).
+   * The key should never be hardcoded into scripts or committed to repositories.
+
+3. **Privacy of Test Artifacts**
+
+   * Test video files and associated `.VaiderInteractions/` folders are stored locally, not uploaded or shared outside the analysis pipeline.
+   * These directories include request/response logs that may contain sensitive UI state — developers are responsible for securing this content if needed.
+
+4. **No Persistent External State**
+
+   * Vaider operates in a stateless fashion with regard to external services: no persistent identifiers, user profiles, or file storage is maintained outside the user's local machine and the temporary Gemini API transaction.
+
+---
 
 ## 2. Dependencies
 
-*Placeholder for:* Details of any external services or libraries.
+The Vaider system relies on the following external services and libraries:
+
+### 2.1 External Services
+
+1. **Google Gemini 1.5 Pro API**
+
+   * Provides the video-to-text interpretation capability.
+   * Requires an internet connection and a paid API key.
+
+2. **Cursor Platform**
+
+   * The Agent operates within Cursor and uses `.cursor/mcp.json` to define available tools like Vaider.
+
+### 2.2 Local and Development Dependencies
+
+1. **HTTP/SSE Server Runtime**
+
+   * A lightweight server (Node.js, Python/FastAPI, or similar) to implement the MCP Server logic.
+
+2. **Environment Variable Loader**
+
+   * E.g., `dotenv` or similar library for loading API keys from `.env` files.
+
+3. **JSON Handling and HTTP Client Libraries**
+
+   * Used to parse requests and send data to Gemini.
+   * E.g., `requests` in Python or `axios` in JavaScript.
+
+4. **File System Access Libraries**
+
+   * Required to access `.mp4` video files and manage `.VaiderInteractions/` logs.
+
+These dependencies should be modular and lightweight to keep the tool accessible for local prototyping and open-source use.
+
 
 ## 3. MCP Server Technical Details
 
