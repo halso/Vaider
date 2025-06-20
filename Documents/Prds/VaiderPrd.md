@@ -3,7 +3,6 @@
 ## 1. Introduction
 
 * **Problem Statement**: For the Vibe Coder the problem only occurs when they are coding an app with a GUI (e.g., a Phone App or a Web App). The Agent can write automated tests but cannot actually "see" or interact with the live UI, so UI issues go unnoticed unless the human points them out.
-* **Vision**: What is the long-term vision for Vaider?
 
 ## 2. Goals and Objectives
 
