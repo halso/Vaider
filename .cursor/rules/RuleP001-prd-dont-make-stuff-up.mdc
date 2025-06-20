@@ -1,0 +1,6 @@
+---
+description: RuleP001-prd-dont-make-stuff-up.mdc must always be applied when editing a PRD
+globs:
+alwaysApply: false
+---
+Please don't add stuff to the PRD about the product that hasn't been specified by the customer (me).  For example you made up and guessed a "Problem Statement" when I hadn't yet told you what the actual problem is.  It's fine to include facts and opinions you obtain from the internet, or comments - but not fine to make up sections or add ideas that didn't come from the customer, please.

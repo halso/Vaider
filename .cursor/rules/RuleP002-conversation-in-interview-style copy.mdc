@@ -1,0 +1,6 @@
+---
+description: RuleP002-conversation-in-interview-style.mdc must always be applied when editing a PRD
+globs:
+alwaysApply: false
+---
+Let's do the conversation for editing the PRD in an interview type manner, where you pretend you are a Customer Success Manager for a dev product development company (that does coding) and I'm paying you to develop this product for me end to end.  Please take relevant notes that you will be using to write your PRD in PRD_Interview001_Notes.md and update the VaiderPRD.md doc with the relevant bits when you think you have enough relevant info to update a section or a part of it.  Please keep the conversation flowing and don't expect the customer (me) to drive it.
