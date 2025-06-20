@@ -2,11 +2,11 @@
 
 ## 1. System Architecture
 
-High-level overview of the technical design.
+*Placeholder for:* High-level overview of the technical design.
 
 ## 2. Dependencies
 
-Any external services or libraries.
+*Placeholder for:* Details of any external services or libraries.
 
 ## 3. MCP Server Technical Details
 
@@ -94,3 +94,12 @@ Any external services or libraries.
 
 * Folder: `test-output/test-name.mp4.VaiderInteractions/`
 * Contains: request/response logs, optional status/debug logs
+
+
+
+## 7. Experimental Programs
+
+During development of the project a number of experimental programs will be used to try out various technologies employed in the system before working on the production code. These will include:
+
+- One that creates and runs a simple Hello World MCP server that can be run and tested by an Agent that just says "Hello Agent" and tells it the current time.
+- One that takes a test-input video file and sends it to Gemini to get a description of it.
