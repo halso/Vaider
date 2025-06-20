@@ -75,7 +75,7 @@ Steve's motivation for this project stems from a desire to gain more experience 
 
 ## 6. Technical Specifications
 
-See VaiderTechSpec.md
+See [Vaider Technical Specification](VaiderTechSpec.md)
 
 ## 7. Future Roadmap
 

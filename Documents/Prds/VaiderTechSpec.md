@@ -1,54 +1,62 @@
-# Vaider Technical Specification 
+# Vaider Technical Specification
 
-* **System Architecture**: High-level overview of the technical design.
-* **Dependencies**: Any external services or libraries.
+## 1. System Architecture
 
-### 6.1 MCP Server Technical Details
+High-level overview of the technical design.
 
-* **Purpose**: The MCP (Message Communication Protocol) server allows the AI agent to communicate with the Vaider tool for video analysis.
+## 2. Dependencies
 
-* **Architecture**:
+List of external services, SDKs, or libraries required by Vaider.
 
-  * The MCP server runs locally on the developer's machine, listening on a specified port. By default, it listens only on localhost to avoid any unintended remote exposure.
-  * It is configured to use HTTP/SSE (Server-Sent Events) transport for communication in version 1.
-  * The server acts as a bridge between the Agent and the video analysis service (Google Gemini 1.5 Pro).
+## 3. MCP Server Technical Details
 
-* **Configuration**:
+### 3.1 Purpose
 
-  * Developers should configure HTTP transport by setting the appropriate configuration in the `.cursor/mcp.json` file.
-  * Example HTTP configuration:
+The MCP (Message Communication Protocol) server allows the AI Agent to communicate with the Vaider tool for video analysis.
 
-    ```json
-    {
-      "tools": {
-        "vaider": {
-          "transport": "http",
-          "url": "http://localhost:3456"
-        }
-      }
+### 3.2 Architecture
+
+* The MCP server runs locally on the developer's machine, listening on a specified port. By default, it listens only on localhost to avoid any unintended remote exposure.
+* It is configured to use HTTP/SSE (Server-Sent Events) transport for communication in version 1.
+* The server acts as a bridge between the Agent and the video analysis service (Google Gemini 1.5 Pro).
+
+### 3.3 Configuration
+
+Developers configure HTTP transport via `.cursor/mcp.json`:
+
+```json
+{
+  "tools": {
+    "vaider": {
+      "transport": "http",
+      "url": "http://localhost:3456"
     }
-    ```
+  }
+}
+```
 
-* **Workflow**:
+### 3.4 Workflow
 
-  * When the Agent completes a GUI test, it sends the video file path to the MCP server.
-  * The MCP server forwards the video to the configured video analysis service and returns the textual description to the Agent.
-  * The communication protocol ensures that the Agent can seamlessly request and receive video analysis results in real-time.
+1. When a GUI test finishes, the Agent sends the video file path to the MCP server.
+2. The MCP server forwards the video to the configured analysis service and returns a textual description to the Agent.
+3. The Agent validates the description against expectations.
 
-* **Benefits Of HTTP/SSE Over Stdio Option**:
+### 3.5 Benefits of HTTP/SSE over stdio
 
-  * Easier testing and debugging due to the ability to interact with the server via standard web tools when using HTTP.
-  * Flexibility in transport options allows developers to choose the method that best fits their development environment.
+* Easier testing and debugging with standard web tools.
+* Flexible transport choice for different development environments.
 
-* **Error Handling**:
+### 3.6 Error Handling
 
-  * If an error occurs, the MCP server returns an HTTP 500 response with a JSON-formatted body describing the issue. This allows the Agent to gracefully detect and log failures.
+If an error occurs, the MCP server returns an HTTP 500 response with a JSON body describing the issue so the Agent can log the failure.
 
+## 4. VaiderRules Configuration File
 
-### 6.2 VaiderRules Configuration File
+### 4.1 Purpose
 
-* **Purpose**: Tells the Agent when and how to use Vaider.
-* **Minimal Viable Config**:
+Instructs the Agent when and how to invoke Vaider.
+
+### 4.2 Minimal viable config
 
 ```json
 {
@@ -58,35 +66,35 @@
 }
 ```
 
-* **Agent Introduction**:
+### 4.3 Agent introduction
 
-  > "You have access to a new tool called Vaider which can interpret videos of GUI tests. Whenever a Playwright test produces a video, use Vaider to interpret what happened on screen and validate it against expectations."
+> You have access to a new tool called **Vaider** that can interpret videos of GUI tests. Whenever a Playwright test produces a video, use Vaider to interpret what happened on screen and validate it against expectations.
 
-* **When to Use**:
+### 4.4 When to use
 
-  * If a GUI-related test is run and a `.mp4` is generated.
-  * Always analyze test videos.
-  * Retry up to 5 times if mismatches exist.
-  * After 5 failed attempts, stop and notify coder with `.VaiderInteractions` path.
+* Whenever a GUI-related test generates a `.mp4` file.
+* Always analyse test videos.
+* Retry up to **5** times if mismatches exist.
+* After 5 failed attempts, stop and notify the developer, pointing to the `.VaiderInteractions` folder.
 
-* **Handling Vaider Results**:
+### 4.5 Handling Vaider results
 
-  * The Agent uses the description from Vaider to validate against expectations.
-  * If mismatches are found, the Agent re-attempts the test up to five times.
-  * After reaching the retry limit, the Agent stops and alerts the developer.
+* Use the returned description to validate against expectations.
+* If mismatches are found, re-attempt the test (max 5 attempts).
+* After the retry limit, alert the developer.
 
-* **Handling Errors or Timeouts**:
+### 4.6 Handling errors or timeouts
 
-  * If Vaider fails to return results due to error or timeout, retry up to three times.
-  * After that, log the failure and notify the developer.
+* Retry up to **3** times for errors or timeouts.
+* After that, log the failure and notify the developer.
 
-### 6.3 Cursor Integration
+## 5. Cursor Integration
 
-* Via `.cursor/mcp.json`
-* Tool name: `vaider`
-* URL: `http://localhost:3456`
+* Defined via `.cursor/mcp.json`.
+* Tool name: `vaider`.
+* URL: `http://localhost:3456`.
 
-### 6.4 Video Storage
+## 6. Video Storage
 
-* Folder: `test-output/test-name.mp4.VaiderInteractions/`
-* Contains: request/response logs, optional status/debug logs
+* Folder pattern: `test-output/<test-name>.mp4.VaiderInteractions/`.
+* Contains request/response logs and optional status/debug logs.
