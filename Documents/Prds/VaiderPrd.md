@@ -8,15 +8,17 @@ Steve's motivation for this project stems from a desire to gain more experience 
 
 ## 1. Introduction
 
-* **Problem Statement**: For the Vibe Coder the problem only occurs when they are coding an app with a GUI (e.g., a Phone App or a Web App). The Agent can write automated tests but cannot actually "see" or interact with the live UI, so UI issues go unnoticed unless the human points them out.
+* **Problem Statement**: While Vibe Coding an AI Agent doesn't currently have the ability to see what is going on in the GUI.  They can run tests, like Playwright, that exercise the GUI but they are still limited in the ability to really see how it's behaving and whether it's working properly.  This leads to the human Vibe Coder having to provide input and feedback about the GUI to the AI Agent, and point out UI issues for the Agent to fix. Vaider is designed to solve this problem by giving the Agent the ability to "see" what is going on in the UI by writing tests that produce videos and then having Vaider describe what is going on in those videos to it.
+
+> **Note:** This obviously only applies to apps with a GUI such as Phone or Web apps.
 
 ## 2. Goals and Objectives
 
 * **Primary Goals**: Enable the Agent to understand the UI state during test execution.
 * **Success Metrics**:
 
-  * Speed up the coding process.
-  * Reduce the need for Vibe Coders to verify or correct UI problems.
+  * The Vibe Coder should notice a speed up in the the AI Agents ability to produce working systems.
+  * The Vibe Coder should notice a reduction in how often they need to validate behaviour or correct UI problems for the Agent.
 
 ## 3. Target Audience
 
@@ -36,7 +38,7 @@ Steve's motivation for this project stems from a desire to gain more experience 
     2. Vaider returns a detailed textual description of what happens in the video.
     3. The Agent compares this description with expected behavior to identify mismatches.
 
-  * Coder Experience: No explicit new UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example if the Agent gets stuck in a loop due to negative responses from Vaider, then the coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which will contain the requests sent to Vaider and the corresponding responses.
+  * Coder Experience: No explicit UI. Once the coder has provided the Vaider tool to the Agent, they should simply observe that the Agent becomes faster and better at writing GUI systems. In case of issues, for example if the Agent gets stuck in a loop due to negative responses from Vaider, then the AI will stop and coder can inspect a directory created next to the original video file named `<video_file_name>.VaiderInteractions`, which will contain the requests sent to Vaider and the corresponding responses.
 
 * **Limitations**:
 
@@ -94,6 +96,3 @@ See the detailed [Vaider Technical Specification](VaiderTechSpec.md)
 ### Risk Management
 * Model Dependency: Over-reliance on Gemini 1.5 Pro may limit accessibility. Mitigation: add support for open models and alternatives in V2.
 * Looping Agent Behavior: Agent retry loops on malformed video descriptions could delay output. Mitigation: future fail-safe timeout + coder notification mechanism planned.
-
-### V2 Features
-* Support additional video-processing AI services beyond Google Gemini (e.g., OpenAI video models, Anthropic Claude Vision, open-source models).
