@@ -84,22 +84,16 @@ See the detailed [Vaider Technical Specification](VaiderTechSpec.md)
 
 ## 8. Other Notes 
 
-*   **Experimental Programs**: During development of the project a number of experimental programs will be used to try out various technologies employed in the system before working on the production code. These will include:
-    - One that creates and runs a simple Hello World MCP server that can be run and tested by an Agent that just says "Hello Agent" and tells it the current time.
-    - One that takes a test-input video file and sends it to Gemini to get a description of it.
-
+    To be added to later.
 
 ## TO DO LATER
 
-    3.1 Competitive Analysis
-Comparison to Other Tools: Provide a brief analysis of similar tools in the market, highlighting what makes Vaider unique and why developers would choose it.
+### 3.1 Competitive Analysis
+* Comparison to Other Tools: Provide a brief analysis of similar tools in the market, highlighting what makes Vaider unique and why developers would choose it.
 
-    Risk Management
+### Risk Management
+* Model Dependency: Over-reliance on Gemini 1.5 Pro may limit accessibility. Mitigation: add support for open models and alternatives in V2.
+* Looping Agent Behavior: Agent retry loops on malformed video descriptions could delay output. Mitigation: future fail-safe timeout + coder notification mechanism planned.
 
-- Model Dependency: Over-reliance on Gemini 1.5 Pro may limit accessibility. Mitigation: add support for open models and alternatives in V2.
-
-- Looping Agent Behavior: Agent retry loops on malformed video descriptions could delay output. Mitigation: future fail-safe timeout + coder notification mechanism planned.
-
-  - V2 Features:
-
-    - Support additional video-processing AI services beyond Google Gemini (e.g., OpenAI video models, Anthropic Claude Vision, open-source models).
+### V2 Features
+* Support additional video-processing AI services beyond Google Gemini (e.g., OpenAI video models, Anthropic Claude Vision, open-source models).
