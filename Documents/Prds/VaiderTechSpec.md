@@ -1,9 +1,14 @@
-# Vaider Technical Specification 
+# Vaider Technical Specification
 
-* **System Architecture**: High-level overview of the technical design.
-* **Dependencies**: Any external services or libraries.
+## 1. System Architecture
 
-### 6.1 MCP Server Technical Details
+High-level overview of the technical design.
+
+## 2. Dependencies
+
+Any external services or libraries.
+
+## 3. MCP Server Technical Details
 
 * **Purpose**: The MCP (Message Communication Protocol) server allows the AI agent to communicate with the Vaider tool for video analysis.
 
@@ -44,8 +49,7 @@
 
   * If an error occurs, the MCP server returns an HTTP 500 response with a JSON-formatted body describing the issue. This allows the Agent to gracefully detect and log failures.
 
-
-### 6.2 VaiderRules Configuration File
+## 4. VaiderRules Configuration File
 
 * **Purpose**: Tells the Agent when and how to use Vaider.
 * **Minimal Viable Config**:
@@ -80,13 +84,13 @@
   * If Vaider fails to return results due to error or timeout, retry up to three times.
   * After that, log the failure and notify the developer.
 
-### 6.3 Cursor Integration
+## 5. Cursor Integration
 
 * Via `.cursor/mcp.json`
 * Tool name: `vaider`
 * URL: `http://localhost:3456`
 
-### 6.4 Video Storage
+## 6. Video Storage
 
 * Folder: `test-output/test-name.mp4.VaiderInteractions/`
 * Contains: request/response logs, optional status/debug logs
