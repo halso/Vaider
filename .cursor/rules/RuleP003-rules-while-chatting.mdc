@@ -8,4 +8,7 @@ Rules list:
 - If you are told to do something, don't do other things, without asking first, that you think could be useful.  If you're not sure - ask, and wait for a response.  An example would be being asked to fix the formatting and header numbering in a file, and deciding that you think the text could be improved and going ahead without asking.  This is *not* acceptable, as it creates a lot of extra work undoing things.
 
 Command list (NOTE: Must have a * in front of command!):-
-*c - Please stage, commit and push changes since last commit, with a suitable comment based on the diffs/changes that you should create yourself.  Please make the comment reasonably detailed depending on the number and types of changes, but not overly verbose.
+*c - Please do all of the following:
+    - Do a full assessment of what changes have been made since the last commit by doing a full diff and checking the content of each change and create a detailed commit comment to send.  Also base the comment on the changes you know have been made while chatting.
+    - Send the commit comment to the coder (me) so I can see what it says, saying "Commit message: <fill in commit message here>"
+    - stage, commit and push changes since last commit.

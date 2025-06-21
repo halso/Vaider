@@ -75,24 +75,48 @@ Steve's motivation for this project stems from a desire to gain more experience 
 
      1. As the Agent can autonomously catch and rectify GUI issues via Vaider, it requires less feedback from the Vibe Coder, enabling faster, more independent task completion.
 
-## 6. Technical Specifications
+## 6. Competitive Analysis
+
+See the [Competitive Analysis](VaiderCompetitorAnalysis.md) for a detailed comparison of Vaider with other tools in the market.
+
+## 7. Technical Specifications
 
 See the detailed [Vaider Technical Specification](VaiderTechSpec.md)
 
-## 7. Future Roadmap
+### 7.1 Non-Functional Requirements
+
+| Category | Requirement |
+|----------|-------------|
+| Privacy / Licensing | Test videos remain local; Gemini usage subject to Google ToS; Vaider distributed under MIT licence. |
+
+## 8. Release Criteria / Roll-out Plan
+
+1. **Functional:** Agent executes sample Playwright suite with Vaider loop and passes (0 human interventions).
+2. **Docs:** `README`, PRD, Tech Spec v1 finalised and published.
+3. **Platforms:** macOS Intel only tested on first release.  Others (Ubuntu, Windows etc) to be added later.
+4. **Security:** Static scan shows 0 high-severity issues; API key never written to disk.
+5. **Package:** Homebrew / PyPI / npm install scripts tested.
+
+## 9. Future Roadmap
 
 *   **V2 Features**:
     * Support additional video-processing AI services beyond Google Gemini (e.g., OpenAI video models, Anthropic Claude Vision, open-source models).
 
-## 8. Other Notes 
+## 10. Risk Register
 
-    To be added to later.
+| ID | Risk | Owner | Likelihood | Impact | Mitigation |
+|----|------|-------|-----------|--------|------------|
+| R-1 | Gemini API price spike | Steve | Medium | Medium | Cache shorter clips, add open-source model fallback in v2 |
+| R-2 | Infinite Agent retry loop | Steve | Low | High | Hard cap 5 retries + timeout + user alert |
+| R-3 | Large video files slow analysis | Community | Medium | Medium | Enforce video size limit & down-scale before upload |
+| R-4 | Privacy concerns for proprietary UIs | User org | Medium | Medium | Recommend local Gemini proxy or on-prem model |
+| R-5 | Vaider slows down development too much due to long wait times for video processing | Steve | High | Medium | If this happens, will look at the time at alternative options e.g. screenshot uploads, multithreading etc etc |
 
-## TO DO LATER
+## 11. Appendix – Reference Links
 
-### 3.1 Competitive Analysis
-* Comparison to Other Tools: Provide a brief analysis of similar tools in the market, highlighting what makes Vaider unique and why developers would choose it.
+1. Applitools homepage – <https://applitools.com/>
+2. Percy by BrowserStack – <https://percy.io/>
+3. Chromatic visual testing – <https://www.chromatic.com/>
+4. Replay.io debugging – <https://www.replay.io/>
 
-### Risk Management
-* Model Dependency: Over-reliance on Gemini 1.5 Pro may limit accessibility. Mitigation: add support for open models and alternatives in V2.
-* Looping Agent Behavior: Agent retry loops on malformed video descriptions could delay output. Mitigation: future fail-safe timeout + coder notification mechanism planned.
+*(Links captured via public web search on 2025-06-20)*

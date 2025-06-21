@@ -163,7 +163,7 @@ These dependencies should be modular and lightweight to keep the tool accessible
 
 ---
 
-## 3.x HTTP API Contract (MCP ⇄ Agent)
+## 3.1 HTTP API Contract (MCP ⇄ Agent)
 
 ### Endpoint Summary
 
@@ -172,7 +172,7 @@ These dependencies should be modular and lightweight to keep the tool accessible
 | POST   | `/v1/analyse` | Submit a GUI-test video for analysis |
 | GET    | `/v1/health`  | Liveness probe for CI / Agent |
 
-### 3.x.1 `POST /v1/analyse`
+### 3.1.1 `POST /v1/analyse`
 
 ```http
 POST /v1/analyse HTTP/1.1
@@ -243,9 +243,33 @@ curl -X POST http://localhost:3456/v1/analyse \
   -d '{"videoPath":"sample.mp4","timeoutSec":30}' | jq
 ```
 
+### 3.1.2 `GET /v1/health`
+
+This endpoint serves as a simple health check to confirm the MCP server is running and responsive. It can be used by the Agent or CI/CD pipelines as a liveness probe before sending analysis requests.
+
+**Request:**
+```http
+GET /v1/health HTTP/1.1
+Host: localhost:3456
+```
+
+**Response – success (200):**
+```jsonc
+{
+  "status": "ok",
+  "timestamp": "2023-10-27T10:00:00Z", // ISO 8601 format
+  "version": "0.1.0" // Server version
+}
+```
+
+**cURL Quick-test:**
+```bash
+curl http://localhost:3456/v1/health | jq
+```
+
 ---
 
-## 3.x MCP Server Implementation Plan
+## 3.2 MCP Server Implementation Plan
 
 | Topic | Decision |
 |-------|----------|
@@ -271,15 +295,11 @@ curl -X POST http://localhost:3456/v1/analyse \
 ## 4. VaiderRules Configuration File
 
 * **Purpose**: Tells the Agent when and how to use Vaider.
-* **Minimal Viable Config**:
-
-```json
-{
-  "video_trigger_pattern": "test-output/**/*.mp4",
-  "analysis_timeout_seconds": 30,
-  "on_mismatch": "retry"
-}
-```
+  **Format**: Plain text, English human readable format.
+* **Variables Set At Top Of File**:
+  - video_not_matching_ai_expectations_retry_limit = 5 
+  - vaider_not_working_retry_limit = 3
+  - timeout_waiting_for_vaider_response_seconds = 30
 
 * **Agent Introduction**:
 
@@ -289,19 +309,19 @@ curl -X POST http://localhost:3456/v1/analyse \
 
   * If a GUI-related test is run and a `.mp4` is generated.
   * Always analyze test videos.
-  * Retry up to 5 times if mismatches exist.
-  * After 5 failed attempts, stop and notify coder with `.VaiderInteractions` path.
+  * Retry up to `video_not_matching_ai_expectations_retry_limit times` if mismatches exist.
+  * After `video_not_matching_ai_expectations_retry_limit times` failed attempts, stop and notify coder telling it the full `.VaiderInteractions` folder path where they can see the full sequence of requests/responses.
 
 * **Handling Vaider Results**:
 
   * The Agent uses the description from Vaider to validate against expectations.
-  * If mismatches are found, the Agent re-attempts the test up to five times.
+  * If mismatches are found, the Agent re-attempts the test up to the retry limit.
   * After reaching the retry limit, the Agent stops and alerts the developer.
 
 * **Handling Errors or Timeouts**:
 
-  * If Vaider fails to return results due to error or timeout, retry up to three times.
-  * After that, log the failure and notify the developer.
+  * If Vaider fails to return results due to error or timeout, retry up to `vaider_not_working_retry_limit` times.
+  * After that, log the failure, notify the developer and await further instructions.
 
 ## 5. Cursor Integration
 
@@ -312,7 +332,7 @@ curl -X POST http://localhost:3456/v1/analyse \
 ## 6. Video Storage
 
 * Folder: `test-output/test-name.mp4.VaiderInteractions/`
-* Contains: request/response logs, optional status/debug logs
+* Contains: request/response logs (possibly optional status/debug logs?)
 
 
 
