@@ -31,15 +31,11 @@
 ---
 
 ## 6.2 Non-Functional Requirements  
-(Add under section **6. Technical Specifications**)
+(Add under section **6. Technical Specifications** — only items accepted in review)
 
 | Category | Requirement |
 |----------|-------------|
-| Performance | Vaider call ≤ 30 s for a ≤ 20 MB video on M1 Mac (single-test). |
-| Reliability | MCP server uptime ≥ 99 % during test runs; automatic retry ×3 on 5xx. |
-| Security | MCP binds to `127.0.0.1`; no incoming connections; API key stored in env. |
-| Privacy | Test videos kept local; no video or logs uploaded except to Gemini. |
-| Compatibility | Works on macOS & Linux; Node.js ≥ 18 or Python ≥ 3.10. |
+| Privacy / Licensing | Test videos remain local; Gemini usage subject to Google ToS; Vaider distributed under MIT licence. |
 
 ---
 

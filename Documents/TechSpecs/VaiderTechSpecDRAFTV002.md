@@ -160,6 +160,114 @@ These dependencies should be modular and lightweight to keep the tool accessible
 
   * If an error occurs, the MCP server returns an HTTP 500 response with a JSON-formatted body describing the issue. This allows the Agent to gracefully detect and log failures.
 
+
+---
+
+## 3.x HTTP API Contract (MCP ⇄ Agent)
+
+### Endpoint Summary
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST   | `/v1/analyse` | Submit a GUI-test video for analysis |
+| GET    | `/v1/health`  | Liveness probe for CI / Agent |
+
+### 3.x.1 `POST /v1/analyse`
+
+```http
+POST /v1/analyse HTTP/1.1
+Host: localhost:3456
+Content-Type: application/json
+Authorization: Bearer <CURSOR_TOOL_TOKEN>
+
+{
+  "videoPath": "test-output/test-abc/test-abc.mp4",
+  "timeoutSec": 30  // optional; defaults to 30 s if omitted
+}
+```
+
+**Response – success (200):**
+```jsonc
+{
+  "description": "1. The app launches… 2. User taps Login … 3. Dashboard loads …",
+  "framesAnalysed": 1872,
+  "model": "Gemini-1.5-Pro",
+  "durationMs": 12894
+}
+```
+
+**Errors & Example JSON Responses**
+
+* **400 – `INVALID_PATH`**  
+  Video file not found / unreadable.
+  ```jsonc
+  {
+    "error": {
+      "code": "INVALID_PATH",
+      "message": "Video file not found: test-output/foo.mp4"
+    }
+  }
+  ```
+
+* **408 – `TIMEOUT`**  
+  Gemini call exceeded `timeoutSec`.
+  ```jsonc
+  {
+    "error": {
+      "code": "TIMEOUT",
+      "message": "Gemini processing exceeded 30 s timeout"
+    },
+    "durationMs": 30015
+  }
+  ```
+
+* **500 – `UPSTREAM_ERROR`**  
+  Gemini service outage or network failure.
+  ```jsonc
+  {
+    "error": {
+      "code": "UPSTREAM_ERROR",
+      "message": "Gemini API returned status 503 – Service Unavailable"
+    },
+    "upstreamResponse": {
+      "status": 503,
+      "body": "<html>Service Unavailable</html>"
+    }
+  }
+  ```
+
+### cURL Quick-test
+```bash
+curl -X POST http://localhost:3456/v1/analyse \
+  -H "Content-Type: application/json" \
+  -d '{"videoPath":"sample.mp4","timeoutSec":30}' | jq
+```
+
+---
+
+## 3.x MCP Server Implementation Plan
+
+| Topic | Decision |
+|-------|----------|
+| **Language** | *Python 3.11 + FastAPI/Uvicorn* embedded – single-file server module.<PLACEHOLDER>
+| **Video Upload** | Use Gemini Python SDK `genai.upload_file(path)` helper, poll until the file state becomes `ACTIVE`, then pass the returned file handle to `model.generate_content(...)`. |
+| **Concurrency** | `--workers 5` flag passed to the server start command (default across environments). |
+| **Start Command** | `python -m vaider_mcp.server --port 3456 --workers 5`  (FastAPI+Uvicorn) |
+| **Deps** | `fastapi`, `uvicorn[standard]`, `python-dotenv`, `requests`, `ffmpeg-python` (optional). |
+| **Performance Goal** | ≤ 30 s wall-clock for 20 MB input on M1 Mac (measured via `time curl …`). |
+
+
+---
+
+### Reference Links
+
+* FastAPI docs – <https://fastapi.tiangolo.com/>  
+* Streaming multipart with `requests` – <https://requests.readthedocs.io/en/latest/user/advanced/#streaming-uploads>  
+* ffmpeg-python – <https://github.com/kkroening/ffmpeg-python>  
+* JSON Schema Draft 2020-12 – <https://json-schema.org/>  
+* OWASP API Security Top 10 – <https://owasp.org/API-Security/>  
+
+
 ## 4. VaiderRules Configuration File
 
 * **Purpose**: Tells the Agent when and how to use Vaider.
