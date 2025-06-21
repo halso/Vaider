@@ -10,5 +10,6 @@ Rules list:
 Command list (NOTE: Must have a * in front of command!):-
 *c - Please do all of the following:
     - Do a full assessment of what changes have been made since the last commit by doing a full diff and checking the content of each change and create a detailed commit comment to send.  Also base the comment on the changes you know have been made while chatting.
-    - Send the commit comment to the coder (me) so I can see what it says, saying "Commit message: <fill in commit message here>"
-    - stage, commit and push changes since last commit.
+    - Please present the commit comment to the coder (me) in a standard Markdown format (so it doesn't require sideways scrolling) for approval, saying "Commit message: <fill in commit message here>.  Please type *a to approve"
+    - Wait for me to enter "*a" before going ahead and doing the following.  If I don't send "*a" and ask for the message to be modified, then please don't do anything unless instructed explicitly.
+    - If I have sent "*a" then please stage, commit and push the changes since last commit with the approved commit message.

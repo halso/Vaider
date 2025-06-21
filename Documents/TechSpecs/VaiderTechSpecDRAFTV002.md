@@ -342,3 +342,147 @@ During development of the project a number of experimental programs will be used
 
 - One that creates and runs a simple Hello World MCP server that can be run and tested by an Agent that just says "Hello Agent" and tells it the current time.
 - One that takes a test-input video file and sends it to Gemini to get a description of it.
+
+
+
+7. **Future Extensibility Hooks**
+   - Interface/adapter pattern for plugging in additional video models (Claude, OpenAI, open-source).
+## 8. Future Extensibility Hooks
+
+To ensure Vaider remains adaptable and is not tightly coupled to a single AI provider, the MCP server will be designed with a pluggable architecture for its video analysis backend. This will be achieved using the **Adapter Pattern**.
+
+### 8.1 Core Interface
+
+A common interface, let's call it `VideoAnalysisService`, will define the contract for any video processing backend.
+
+```python
+from abc import ABC, abstractmethod
+
+class VideoAnalysisResult:
+    """Dataclass to hold the analysis result."""
+    description: str
+    model_name: str
+    duration_ms: int
+    raw_response: dict # For logging/debugging
+
+class VideoAnalysisService(ABC):
+    """Abstract base class for a video analysis service provider."""
+
+    @abstractmethod
+    def analyse_video(self, video_path: str, timeout_sec: int) -> VideoAnalysisResult:
+        """
+        Takes a path to a video file and returns a structured analysis result.
+        
+        This method should handle all provider-specific logic, including:
+        - API authentication
+        - File uploading/streaming
+        - Calling the model endpoint
+        - Parsing the response into a common format
+        - Error handling and raising standardized exceptions
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def provider_name(self) -> str:
+        """Returns the name of the provider (e.g., 'GoogleGemini', 'OpenAI')."""
+        pass
+```
+
+### 8.2 Concrete Implementations
+
+For each supported AI model, a concrete class will implement the `VideoAnalysisService` interface.
+
+**Example for Gemini (current implementation):**
+```python
+class GeminiVideoService(VideoAnalysisService):
+    def __init__(self, api_key: str):
+        # ... initialization logic for the Gemini client ...
+
+    def analyse_video(self, video_path: str, timeout_sec: int) -> VideoAnalysisResult:
+        # ... logic to upload file to Gemini and get description ...
+        return VideoAnalysisResult(...)
+
+    @property
+    def provider_name(self) -> str:
+        return "GoogleGemini"
+```
+
+**Future adapter for OpenAI:**
+```python
+class OpenAIVideoService(VideoAnalysisService):
+    def __init__(self, api_key: str):
+        # ... initialization logic for the OpenAI client ...
+
+    def analyse_video(self, video_path: str, timeout_sec: int) -> VideoAnalysisResult:
+        # ... logic to call GPT-4V with video and get description ...
+        return VideoAnalysisResult(...)
+
+    @property
+    def provider_name(self) -> str:
+        return "OpenAI"
+```
+
+### 8.3 Configuration and Selection
+
+The active video analysis service will be determined by a configuration setting, for example in a `vaider.conf` file or an environment variable. The MCP server will use a factory function to instantiate the correct adapter at startup.
+
+**Example `vaider.conf` setting:**
+```ini
+# vaider.conf
+[analysis]
+provider = "GoogleGemini"
+# provider = "OpenAI" # Future option
+```
+
+**Factory logic in the server:**
+```python
+def get_analysis_service(config) -> VideoAnalysisService:
+    provider = config.get("analysis", "provider")
+    api_key = os.getenv(f"{provider.upper()}_API_KEY") # e.g., GOOGLEGEMINI_API_KEY
+
+    if provider == "GoogleGemini":
+        return GeminiVideoService(api_key=api_key)
+    elif provider == "OpenAI":
+        return OpenAIVideoService(api_key=api_key)
+    else:
+        raise ValueError(f"Unsupported provider: {provider}")
+
+# Server startup
+# service = get_analysis_service(load_config())
+# service.analyse_video(...)
+```
+
+This approach will allow new video analysis models to be added in the future with minimal changes to the core server logic, simply by adding a new adapter class and updating the factory function.
+
+## 9. API Data Validation
+
+To improve the robustness and maintainability of the MCP server, all incoming API requests will be validated using data models. Since the implementation plan calls for Python with FastAPI, this will be handled idiomatically using Pydantic models.
+
+### 9.1 Benefits
+
+*   **Automatic Validation:** FastAPI will automatically validate incoming request bodies against the Pydantic models. If the data is malformed (e.g., a required field is missing, a field has the wrong data type), FastAPI will automatically return a descriptive HTTP 422 (Unprocessable Entity) error. This eliminates the need for manual validation logic.
+*   **Self-Documenting Code:** The Pydantic models serve as a clear, in-code definition of the API's expected data structures.
+*   **Enhanced Developer Experience:** These models provide excellent autocompletion and type-checking support in modern code editors, reducing the chance of common programming errors.
+
+### 9.2 Example Implementation
+
+Instead of handling raw dictionary objects, the `/v1/analyse` endpoint will expect a body that conforms to an `AnalyseRequest` model.
+
+```python
+from pydantic import BaseModel, FilePath
+from typing import Optional
+
+class AnalyseRequest(BaseModel):
+    videoPath: FilePath  # Validates that the file path exists.
+    timeoutSec: Optional[int] = 30  # An optional field with a default value.
+
+# In the FastAPI endpoint:
+# @app.post("/v1/analyse")
+# async def analyse_endpoint(request: AnalyseRequest):
+#     # FastAPI ensures that 'request' is a valid instance of AnalyseRequest.
+#     # You can now safely access request.videoPath and request.timeoutSec.
+#     ...
+```
+
+This practice ensures that the server's business logic only ever deals with data that has been confirmed to be valid and well-structured, making the entire application more reliable.
